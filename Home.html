@@ -3,11 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
-    <!-- <link rel="stylesheet" href="Home.css"> -->
-     <scritp src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></scritp>
-     <scritp src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></scritp>
+    <link rel="stylesheet" type="text/css" href="Home.css">
+     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-    
+    <div id="root"></div>
+    <script type="text/babel">
+        const products = [
+            { id: 1, name: 'A', price: 99.99, image: 'https://via.placeholder.com/200x150?text=Product+A' },
+            { id: 2, name: 'B', price: 149.99, image: 'https://via.placeholder.com/200x150?text=Product+B' },
+            { id: 3, name: 'C', price: 199.99, image: 'https://via.placeholder.com/200x150?text=Product+C' },
+            { id: 4, name: 'D', price: 79.99, image: 'https://via.placeholder.com/200x150?text=Product+D' }
+        ];
+
+        function Navbar(){
+            return(
+                <div className="nav">
+                    <h2>Home</h2>
+                    <div>
+                        <a href="#">Home</a>
+                        <a href="#">Shop</a>
+                        <a href="#">Cart</a>
+                        <a href="#">Login</a>
+                    </div>
+                </div>        
+            );
+        }
+        function Banner(){
+            return(
+                <div className="banner">
+                    <h1>Welcome to Our Store</h1>
+                    <p>Find the best products at unbeatable prices!</p>
+                </div>
+            );
+        }
+        function ProductCard({product}){
+            return(
+                <div className="product-card">
+                    <img src={product.image} alt={product.name} />
+                    <h3>{product.name}</h3>
+                    <p>${product.price}</p>
+                    <button onClick={() => alert(`Adding ${product.name} into cart`)}>Add to Cart</button>
+                    </div>
+            );
+        }
+        function ProductList(){
+            return(
+                <div className="products">
+                    {products.map(product => (
+                        <ProductCard key={product.id} product={product} />
+                    ))}
+                    </div>
+            );
+        }
+        function App(){
+            return(
+                <div>
+                    <Navbar />
+                    <Banner />
+                    <ProductList />
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
