@@ -34,4 +34,4 @@ flashSaleQueue.process(async (job) => {
         console.error('Job ${job.id} failed:', error.message);
         throw error;
     }
-})
+});
