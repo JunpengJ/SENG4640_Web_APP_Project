@@ -5,8 +5,60 @@ const { auth } = require('../middleware/auth');
 // Import the flash sale queue and enqueue function
 const { flashSaleQueue, enqueuePurchase } = require('../services/queue');
 
+const FlashSale = require('../models/FlashSale');
+
 // Create a new router instance
 const router = express.Router();
+
+router.get('/', async (req, res) => {
+  try {
+    // 为了测试，先返回所有闪购数据（不限制状态和时间）
+    const flashSales = await FlashSale.find().populate('productId');
+    res.json(flashSales);
+  } catch (error) {
+    console.error('GET /flashsales error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/v2', async (req, res) => {
+  try {
+    const { status = 'active' } = req.query;
+    const now = new Date();
+    let filter = {};
+    if (status === 'active') {
+      filter = { startTime: { $lte: now }, endTime: { $gte: now } };
+    } else if (status === 'upcoming') {
+      filter = { startTime: { $gt: now } };
+    } else if (status === 'ended') {
+      filter = { endTime: { $lt: now } };
+    }
+    const flashSales = await FlashSale.find(filter).populate('productId');
+    res.json(flashSales);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get the flash sale product list
+router.get('/', async (req, res) => {
+  try {
+    const { status = 'active' } = req.query;
+    const now = new Date();
+    let filter = {};
+    if (status === 'active') {
+      filter = { startTime: { $lte: now }, endTime: { $gte: now }, status: 'active' };
+    } else if (status === 'upcoming') {
+      filter = { startTime: { $gt: now }, status: 'upcoming' };
+    } else if (status === 'ended') {
+      filter = { endTime: { $lt: now }, status: 'ended' };
+    }
+    const flashSales = await FlashSale.find(filter).populate('productId');
+    res.json(flashSales);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Route to handle a purchase request for a flash sale
 router.post('/:flashSaleId', auth, async (req, res) => {
@@ -25,7 +77,7 @@ router.post('/:flashSaleId', auth, async (req, res) => {
             return res.status(400).json({ error: 'Flash sale stock insufficient' }); // Return an error if there is not enough stock
         }
 
-        const job = await enqueuePurchase(req.user.id, productId, quantity, flashSaleId); // Enqueue the purchase request
+        const job = await enqueuePurchase(req.user._id, productId, quantity, flashSaleId); // Enqueue the purchase request
         res.status(202).json({ jobId: job.id, message: 'Purchase request received' }); // Return a success response with the job ID
     } catch (error) {
         res.status(500).json({ error: error.message }); // Handle errors

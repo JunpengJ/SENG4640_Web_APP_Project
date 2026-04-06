@@ -12,14 +12,15 @@ const router = express.Router();
 // Route to get the current user's cart
 router.get('/', auth, async (req, res) => {
     try {
-        let cart = await Cart.findOne({ userId: req.user.id }); // Find the cart for the authenticated user
+        let cart = await Cart.findOne({ userId: req.user._id }); // Find the cart for the authenticated user
         if (!cart) {
-          cart = new Cart({ userId: req.user.id, items: [] }); // Create a new cart if none exists
+          cart = new Cart({ userId: req.user._id, items: [] }); // Create a new cart if none exists
           await cart.save();
         }
         res.json(cart); // Return the cart
     } catch (error) {
-      res.status(500).json({ error: error.message }); // Handle errors
+        console.error('Error in POST /cart:', error);
+        res.status(500).json({ error: error.message }); // Handle errors
     }
 });
 
@@ -32,9 +33,9 @@ router.post('/', auth, async (req, res) => {
         const product = await Product.findById(productId); // Find the product by ID
         if (!product) return res.status(404).json({ error: 'Product not found' });
 
-        let cart = await Cart.findOne({ userId: req.user.id }); // Find the cart for the authenticated user
+        let cart = await Cart.findOne({ userId: req.user._id }); // Find the cart for the authenticated user
         if (!cart) {
-          cart = new Cart({ userId: req.user.id, items: [] }); // Create a new cart if none exists
+          cart = new Cart({ userId: req.user._id, items: [] }); // Create a new cart if none exists
         }
 
         const existingIndex = cart.items.findIndex(item => item.productId.toString() === productId); // Check if the product is already in the cart
@@ -52,6 +53,7 @@ router.post('/', auth, async (req, res) => {
         await cart.save(); // Save the updated cart
         res.json(cart); // Return the updated cart
     } catch (error) {
+        console.error('Error in POST /cart:', error);
         res.status(500).json({ error: error.message }); // Handle errors
     }
 });
@@ -62,7 +64,7 @@ router.put('/:itemId', auth, async (req, res) => {
         const { quantity } = req.body; // Extract the new quantity from the request body
         if (quantity < 1) return res.status(400).json({ error: 'Quantity must be at least 1' });
         
-        const cart = await Cart.findOne({ userId: req.user.id }); // Find the cart for the authenticated user
+        const cart = await Cart.findOne({ userId: req.user._id }); // Find the cart for the authenticated user
         if (!cart) return res.status(404).json({ error: 'Cart not found' });
         
         const item = cart.items.id(req.params.itemId); // Find the item in the cart by ID
@@ -72,6 +74,7 @@ router.put('/:itemId', auth, async (req, res) => {
         await cart.save(); // Save the updated cart
         res.json(cart); // Return the updated cart
     } catch (error) {
+        console.error('Error in PUT /cart/:itemId:', error);
         res.status(500).json({ error: error.message }); // Handle errors
     }
 });
@@ -79,27 +82,29 @@ router.put('/:itemId', auth, async (req, res) => {
 // Route to remove an item from the cart
 router.delete('/:itemId', auth, async (req, res) => {
     try {
-        const cart = await Cart.findOne({ userId: req.user.id }); // Find the cart for the authenticated user
+        const cart = await Cart.findOne({ userId: req.user._id }); // Find the cart for the authenticated user
         if (!cart) return res.status(404).json({ error: 'Cart not found' });
         
         cart.items.pull(req.params.itemId); // Remove the item from the cart
         await cart.save(); // Save the updated cart
         res.json(cart); // Return the updated cart
     } catch (error) {
-      res.status(500).json({ error: error.message }); // Handle errors
+        console.error('Error in DELETE /cart/:itemId:', error);
+        res.status(500).json({ error: error.message }); // Handle errors
     }
 });
 
 // Route to clear all items from the cart
 router.delete('/', auth, async (req, res) => {
     try {
-        const cart = await Cart.findOne({ userId: req.user.id }); // Find the cart for the authenticated user
+        const cart = await Cart.findOne({ userId: req.user._id }); // Find the cart for the authenticated user
         if (cart) {
           cart.items = []; // Clear all items from the cart
           await cart.save(); // Save the updated cart
         }
         res.json({ message: 'Cart cleared' }); // Return a success message
     } catch (error) {
+        console.error('Error in DELETE /cart/:itemId:', error);
         res.status(500).json({ error: error.message }); // Handle errors
     }
 });

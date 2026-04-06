@@ -41,7 +41,9 @@ app.use('/api/auth', authRoutes); // Authentication routes
 app.use('/api/products', productRoutes); // Product routes
 app.use('/api/cart', cartRoutes); // Cart routes
 app.use('/api/orders', orderRoutes); // Order routes
-app.use('/api/flashsale', flashSaleRoutes); // Flash sale routes
+app.use('/api/flashsales', flashSaleRoutes); // Flash sale routes
+
+
 
 // Global error-handling middleware
 app.use((err, req, res, next) => {

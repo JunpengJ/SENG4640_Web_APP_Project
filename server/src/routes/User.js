@@ -54,7 +54,7 @@ router.post('/login', async (req, res) => {
 // Route to get the authenticated user's details
 router.get('/me', auth, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select('-password'); // Find the user by ID and exclude the password field
+        const user = await User.findById(req.user._id).select('-password'); // Find the user by ID and exclude the password field
         res.json({ user }); // Return the user details
     } catch (error) {
         res.status(500).json({ error: error.message }); // Handle errors
@@ -69,7 +69,7 @@ router.put('/me', auth, async (req, res) => {
         for (const key of allowedUpdates) {
           if (req.body[key] !== undefined) updates[key] = req.body[key]; // Collect updates from the request body
         }
-        const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true }).select('-password'); // Update the user details
+        const user = await User.findByIdAndUpdate(req.user._id, updates, { new: true }).select('-password'); // Update the user details
         res.json({ user }); // Return the updated user details
     } catch (error) {
         res.status(500).json({ error: error.message }); // Handle errors

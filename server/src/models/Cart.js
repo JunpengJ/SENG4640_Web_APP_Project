@@ -1,8 +1,7 @@
-// Import the mongoose library for MongoDB interaction
 const mongoose = require('mongoose');
 
 // Define the schema for individual items in the cart
-const cartItemSchema  = new mongoose.Schema({
+const cartItemSchema = new mongoose.Schema({
     productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true }, // Reference to the Product model
     name: { type: String, required: true }, // Name of the product
     price: { type: Number, required: true }, // Price of the product
@@ -12,16 +11,9 @@ const cartItemSchema  = new mongoose.Schema({
 
 // Define the schema for the cart
 const cartSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true }, // Reference to the User model
-    items: [cartItemSchema], // Array of items in the cart
-    updatedAt: { type: Date, default: Date.now } // Timestamp for the last update to the cart
-});
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true }, // Reference to the User model, unique for each user
+    items: [cartItemSchema] // Array of items in the cart
+}, { timestamps: true });  // Automatically manage createdAt and updatedAt timestamps
 
-// Middleware to update the updatedAt field before saving the cart
-cartSchema.pre('save', function(next) {
-    this.updatedAt = Date.now();
-    next();
-});
-
-// Export the Cart model for use in other parts of the application
+// Export the Cart model
 module.exports = mongoose.model('Cart', cartSchema);

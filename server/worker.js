@@ -51,7 +51,7 @@ flashSaleQueue.process(async (job) => {
             }
         }
 
-        const orderNumber = 'ORD-${Date.now()}-${Math.random().toString(36).substr(2, 6)}'; // Generate a unique order number
+        const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`; // Generate a unique order number
 
         const order = new Order({
             orderNumber,

@@ -15,7 +15,7 @@ router.post('/', auth, async (req, res) => {
     try {
         const { shippingAddress, paymentMethod } = req.body; // Extract shipping address and payment method from the request body
         
-        const cart = await Cart.findOne({ userId: req.user.id }); // Find the cart for the authenticated user
+        const cart = await Cart.findOne({ userId: req.user._id }); // Find the cart for the authenticated user
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ error: 'Cart is empty' }); // Return an error if the cart is empty
         }
@@ -40,7 +40,7 @@ router.post('/', auth, async (req, res) => {
       
         const order = new Order({
             orderNumber,
-            userId: req.user.id,
+            userId: req.user._id,
             items: cart.items.map(item => ({
                 productId: item.productId,
                 name: item.name,
@@ -72,7 +72,7 @@ router.post('/', auth, async (req, res) => {
 // Route to get all orders for the authenticated user
 router.get('/', auth, async (req, res) => {
     try {
-        const orders = await Order.find({ userId: req.user.id }).sort({ createdAt: -1 }); // Find and sort orders by creation date
+        const orders = await Order.find({ userId: req.user._id }).sort({ createdAt: -1 }); // Find and sort orders by creation date
         res.json(orders); // Return the orders
     } catch (error) {
         res.status(500).json({ error: error.message }); // Handle errors
@@ -82,7 +82,7 @@ router.get('/', auth, async (req, res) => {
 // Route to get a specific order by ID
 router.get('/:orderId', auth, async (req, res) => {
     try {
-        const order = await Order.findOne({ _id: req.params.orderId, userId: req.user.id }); // Find the order by ID and user ID
+        const order = await Order.findOne({ _id: req.params.orderId, userId: req.user._id }); // Find the order by ID and user ID
         if (!order) return res.status(404).json({ error: 'Order not found' }); // Return an error if the order does not exist
         res.json(order); // Return the order
     } catch (error) {
