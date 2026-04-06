@@ -1,18 +1,24 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { getProducts } from '../api';
 import ProductCard from '../components/ProductCard';
+import CategoryNav from '../components/CategoryNav'; 
 
 function Home() {
+    const [searchParams] = useSearchParams();
+    const category = searchParams.get('category');
     const [products, setProducts] = useState([]); // State to store product data
     const [loading, setLoading] = useState(true); // State to track loading status
-
+    
     useEffect(() => {
         fetchProducts(); // Fetch products when the component mounts
-    }, []);
+    }, [category]);
 
     const fetchProducts = async () => {
         try {
-            const res = await getProducts(); // Fetch product data from the API
+            const params = {};
+            if (category) params.category = category;
+            const res = await getProducts(params); // Fetch product data from the API
             setProducts(res.data.products || res.data); // Set the product data
         } catch (err) {
             console.error(err); // Log any errors during the fetch
@@ -30,6 +36,7 @@ function Home() {
                 <h1>Welcome to Our Store</h1>
                 <p>Find the best products at unbeatable prices!</p>
             </div>
+            <CategoryNav />
             <div className="products">
                 {/* Map through the products array and render a ProductCard for each product */}
                 {products.map((product) => (

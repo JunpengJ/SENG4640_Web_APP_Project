@@ -14,7 +14,10 @@ router.get('/', async (req, res) => {
         const { page = 1, limit = 20, category, minPrice, maxPrice, keyword } = req.query; // Extract query parameters
         const filter = { isActive: true }; // Filter for active products
         
-        if (category) filter.categories = category; // Filter by category
+        if (category) {
+            // Filter by category
+            filter.categories = category;
+        } 
         if (minPrice || maxPrice) {
             filter.price = {};
             if (minPrice) filter.price.$gte = parseFloat(minPrice); // Filter by minimum price

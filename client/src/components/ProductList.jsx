@@ -1,12 +1,35 @@
+import { useState, useEffect } from 'react';
+import { getProducts } from '../api';
 import ProductCard from './ProductCard';
-import products from '../data/products';
 
-function ProductList(){
-    return(
+function ProductList({ category }) {
+    const [products, setProducts] = useState([]); // Stored product list
+    const [loading, setLoading] = useState(true); // Loading state for product fetch
+
+    useEffect(() => {
+        fetchProducts();
+    }, [category]);
+
+    const fetchProducts = async () => {
+        setLoading(true);
+        try {
+            const params = {};
+            if (category) params.category = category;
+            const res = await getProducts(params);
+            setProducts(res.data.products || res.data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) return <div>Loading products...</div>;
+
+    return (
         <div className="products">
-            {/* Map through the products array and render a ProductCard for each product */}
             {products.map(product => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product._id} product={product} />
             ))}
         </div>
     );

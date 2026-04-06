@@ -7,6 +7,7 @@ import Cart from './pages/Cart';
 import OrderHistory from './pages/OrderHistory';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AdminDashboard from './pages/AdminDashboard';
 import './App.css';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
                 <Route path="/orders" element={user ? <OrderHistory /> : <Navigate to="/login" />} /> {/* Protected route for order history */}
                 <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} /> {/* Route for login page */}
                 <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} /> {/* Route for registration page */}
+                <Route path="/admin" element={ user && (user.role === 'superAdmin' || user.role === 'productManager') ? <AdminDashboard /> : <Navigate to="/" />} />
             </Routes>
         </div>
     );

@@ -6,7 +6,7 @@ const productSchema = new mongoose.Schema({
     name: { type: String, required: true }, // Name of the product
     description: String, // Description of the product
     price: { type: Number, required: true }, // Price of the product
-    categories: [String], // Categories the product belongs to
+    categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }], // Categories the product belongs to
     images: [String], // Array of image URLs for the product
     inventory: { // Inventory details
         total: { type: Number, default: 0 }, // Total stock of the product

@@ -21,6 +21,7 @@ const productRoutes = require('./routes/product');
 const cartRoutes = require('./routes/Cart'); 
 const orderRoutes = require('./routes/Order');
 const flashSaleRoutes = require('./routes/flashSale');
+const categoryRoutes = require('./routes/Category');
 
 // Connect to the MongoDB database
 connectDB();
@@ -42,6 +43,7 @@ app.use('/api/products', productRoutes); // Product routes
 app.use('/api/cart', cartRoutes); // Cart routes
 app.use('/api/orders', orderRoutes); // Order routes
 app.use('/api/flashsales', flashSaleRoutes); // Flash sale routes
+app.use('/api/categories', categoryRoutes); // Category routes
 
 
 

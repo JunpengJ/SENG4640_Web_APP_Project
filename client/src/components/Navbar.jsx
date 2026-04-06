@@ -13,6 +13,7 @@ function Navbar() {
             <Link to="/flash-sale">Flash Sale</Link>
             <Link to="/cart">Cart</Link>
             {user && <Link to="/orders">My Orders</Link>}
+            {user && (user.role === 'superAdmin' || user.role === 'productManager') && (<Link to="/admin">Admin</Link>)}
             {user ? (
                 <>
                   {/* Display user email and logout button if authenticated */}
