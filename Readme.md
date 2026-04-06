@@ -25,9 +25,12 @@ Make sure you have the following installed on your development machine:
 git clone https://github.com/JunpengJ/SENG4640_Web_APP_Project.git
 cd SENG4640_Web_APP_Project
 
-
 The project structure is:
 .
 ├── client/       # React frontend (Vite)
 ├── server/       # Node.js/Express backend
 └── README.md
+
+### 2. Install backend dependencies
+cd server
+npm install
