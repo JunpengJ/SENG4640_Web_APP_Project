@@ -10,7 +10,10 @@ const flashSaleSchema = new mongoose.Schema({
     startTime: { type: Date, required: true }, // Start time of the flash sale
     endTime: { type: Date, required: true }, // End time of the flash sale
     status: { type: String, enum: ['upcoming', 'active', 'ended'], default: 'upcoming' } // Status of the flash sale
-}, { timestamps: true });
+}, { timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+ });
 
 // Virtual property to calculate the remaining stock
 flashSaleSchema.virtual('remainingStock').get(function() {

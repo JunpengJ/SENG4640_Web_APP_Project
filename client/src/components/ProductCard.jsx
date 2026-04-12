@@ -35,9 +35,9 @@ function ProductCard({ product, flashSale = null }) {
             {isFlashSale ? (
                 <>
                     {/* Display sale price and original price */}
-                    <span>${displayPrice}</span>
+                    <span className="sale-price">${displayPrice}</span>
                     {' '}
-                    <span>${originalPrice}</span>
+                    <span className="original-price">${originalPrice}</span>
                 </>
             ) : (
               <span>${displayPrice}</span>

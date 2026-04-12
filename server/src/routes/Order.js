@@ -20,11 +20,17 @@ router.post('/', auth, async (req, res) => {
             return res.status(400).json({ error: 'Cart is empty' }); // Return an error if the cart is empty
         }
       
+        const insufficientStock = [];
         for (const item of cart.items) {
-            const product = await Product.findById(item.productId); // Check if the product exists and has sufficient stock
+            const product = await Product.findById(item.productId);
             if (!product || product.inventory.available < item.quantity) {
-                return res.status(400).json({ error: `Insufficient stock for ${item.name}` });
+                insufficientStock.push(item.name);
             }
+        }
+        if (insufficientStock.length > 0) {
+            const errorMsg = `Insufficient stock for: ${insufficientStock.join(', ')}`;
+            console.log('Order error:', errorMsg);
+            return res.status(400).json({ error: errorMsg });
         }
       
         for (const item of cart.items) {

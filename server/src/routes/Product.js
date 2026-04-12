@@ -69,6 +69,7 @@ router.post('/', auth, authorize('productManager', 'superAdmin'), async (req, re
         await product.save(); // Save the product to the database
         res.status(201).json(product); // Return the created product
     } catch (error) {
+        console.error('Error creating category:', error);
         res.status(500).json({ error: error.message }); // Handle errors
     }
 });

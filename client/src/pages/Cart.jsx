@@ -2,67 +2,69 @@ import { useState, useEffect } from 'react';
 import { getCart, updateCartItem, removeCartItem, clearCart, createOrder } from '../api';
 
 function Cart() {
-    const [cart, setCart] = useState(null); // State to store cart data
-    const [loading, setLoading] = useState(true); // State to track loading status
-    const [checkoutLoading, setCheckoutLoading] = useState(false); // State to track checkout process
+    const [cart, setCart] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [checkoutLoading, setCheckoutLoading] = useState(false);
 
     useEffect(() => {
-        fetchCart(); // Fetch cart data when the component mounts
+        fetchCart();
     }, []);
 
     const fetchCart = async () => {
         try {
-          const res = await getCart(); // Fetch cart data from the API
-          setCart(res.data);
+            const res = await getCart();
+            setCart(res.data);
         } catch (err) {
-          console.error(err); // Log any errors during the fetch
-          alert('Failed to load cart');
+            console.error(err);
+            alert('Failed to load cart');
         } finally {
-          setLoading(false); // Set loading to false after the fetch completes
+            setLoading(false);
         }
     };
 
     const handleUpdateQuantity = async (itemId, newQuantity) => {
-        if (newQuantity < 1) return; // Prevent updating to a quantity less than 1
+        if (newQuantity < 1) return;
         try {
-          await updateCartItem(itemId, newQuantity); // Update the quantity of the cart item
-          fetchCart(); // Refresh the cart data
+            await updateCartItem(itemId, newQuantity);
+            fetchCart();
         } catch (err) {
-          console.error(err); // Log any errors during the update
-          alert('Failed to update quantity');
+            console.error(err);
+            alert('Failed to update quantity');
         }
     };
 
     const handleRemoveItem = async (itemId) => {
-        if (!window.confirm('Remove this item?')) return; // Confirm before removing the item
+        if (!window.confirm('Remove this item?')) return;
         try {
-          await removeCartItem(itemId); // Remove the item from the cart
-          fetchCart(); // Refresh the cart data
+            await removeCartItem(itemId);
+            fetchCart();
         } catch (err) {
-          console.error(err); // Log any errors during the removal
-          alert('Failed to remove item');
+            console.error(err);
+            alert('Failed to remove item');
         }
     };
 
-     const handleCheckout = async () => {
-        setCheckoutLoading(true); // Set checkout loading to true
+    const handleCheckout = async () => {
+        setCheckoutLoading(true);
         try {
-            await createOrder({}); // Create an order
+            await createOrder({});
             alert('Order placed successfully!');
-            fetchCart(); // Refresh the cart data
+            fetchCart();
         } catch (err) {
-            console.error(err); // Log any errors during checkout
-            alert('Checkout failed');
+            console.log('Full error object:', err);
+            console.log('Response data:', err.response?.data);
+            const errorMsg = err.response?.data?.error || 'Checkout failed';
+            alert(errorMsg);
         } finally {
-            setCheckoutLoading(false); // Set checkout loading to false
+            setCheckoutLoading(false);
         }
     };
 
-    if (loading) return <div style={{ padding: '2rem' }}>Loading cart...</div>; // Display loading message while fetching data
+    if (loading) return <div style={{ padding: '2rem' }}>Loading cart...</div>;
     if (!cart || cart.items.length === 0) {
-        return <div style={{ padding: '2rem' }}>Your cart is empty.</div>; // Display message if the cart is empty
+        return <div style={{ padding: '2rem' }}>Your cart is empty.</div>;
     }
-    const total = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0); // Calculate the total price
+    const total = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     return (
         <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '1rem' }}>
@@ -74,7 +76,18 @@ function Cart() {
                         <div style={{ flex: 1 }}>${item.price.toFixed(2)}</div>
                         <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <button onClick={() => handleUpdateQuantity(item._id, item.quantity - 1)}>-</button>
-                            <span>{item.quantity}</span>
+                            <input
+                                type="number"
+                                min="1"
+                                value={item.quantity}
+                                onChange={(e) => {
+                                    const newQty = parseInt(e.target.value, 10);
+                                    if (!isNaN(newQty) && newQty >= 1) {
+                                        handleUpdateQuantity(item._id, newQty);
+                                    }
+                                }}
+                                style={{ width: '60px', textAlign: 'center', border: '1px solid #ccc', borderRadius: '4px', padding: '0.25rem' }}
+                            />
                             <button onClick={() => handleUpdateQuantity(item._id, item.quantity + 1)}>+</button>
                         </div>
                         <div style={{ flex: 1 }}>${(item.price * item.quantity).toFixed(2)}</div>
@@ -95,5 +108,4 @@ function Cart() {
     );
 }
 
-// Export the Cart component for use in other parts of the application
 export default Cart;

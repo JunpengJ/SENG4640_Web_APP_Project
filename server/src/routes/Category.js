@@ -16,12 +16,16 @@ router.get('/', async (req, res) => {
 
 router.post('/', auth, authorize('productManager', 'superAdmin'), async (req, res) => {
     try {
-        const { name, slug, description, image, parenId } = req.body;
-        const category = new Category({ name, slug, description, image, parentId });
+        const { name, slug, description } = req.body;
+        const category = new Category({ name, slug, description });
+        if (!slug) {
+            slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]/g, '');
+        }
         await category.save();
         res.status(201).json(category);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    } catch (error) {
+        console.error('Error creating category:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
